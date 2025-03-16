@@ -68,6 +68,7 @@ jobs:
       - name: Upload csv files to artifact
         if: ${{ github.event.inputs.upload_artifact == 'true' }}
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: "Account Info"
           path: "*.csv"
