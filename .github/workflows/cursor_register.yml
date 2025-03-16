@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       number:
-        default: "2"
+        default: "6"
         type: number
       max_workers:
-        default: "1"
+        default: "2"
         type: number
       email_server:
         type: choice
