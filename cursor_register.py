@@ -115,19 +115,33 @@ def register_cursor(register_config):
 
     results = [result for result in results if result["token"] is not None]
 
+    # 创建CSV文件，即使无结果也创建空文件以确保工作流不会失败
+    formatted_date = datetime.now().strftime("%Y-%m-%d")
+    output_filename = f"./output_{formatted_date}.csv"
+    token_filename = f"./token_{formatted_date}.csv"
+    
     if len(results) > 0:
-        formatted_date = datetime.now().strftime("%Y-%m-%d")
-
         fieldnames = results[0].keys()
         # Write username, token into a csv file
-        with open(f"./output_{formatted_date}.csv", 'a', newline='') as file:
+        with open(output_filename, 'a', newline='') as file:
             writer = csv.DictWriter(file, fieldnames=fieldnames)
             writer.writerows(results)
         # Only write token to csv file, without header
         tokens = [{'token': row['token']} for row in results]
-        with open( f"./token_{formatted_date}.csv", 'a', newline='') as file:
+        with open(token_filename, 'a', newline='') as file:
             writer = csv.DictWriter(file, fieldnames=['token'])
             writer.writerows(tokens)
+    else:
+        # 即使没有结果，也创建空的CSV文件防止GitHub Actions上传失败
+        with open(output_filename, 'w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=['username', 'token'])
+            writer.writeheader()  # 只写入表头
+        
+        with open(token_filename, 'w', newline='') as file:
+            writer = csv.DictWriter(file, fieldnames=['token'])
+            writer.writeheader()  # 只写入表头
+            
+        print("[Register] No accounts were registered successfully. Created empty CSV files.")
 
     return results
 
